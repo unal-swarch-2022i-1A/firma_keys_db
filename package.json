@@ -1,0 +1,29 @@
+{
+  "name": "firma_keys_db",
+  "version": "1.0.0",
+  "description": "Almacena las llaves publica y privada de encriptacion",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unal-swarch-2022i-1A/firma_keys_db.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unal-swarch-2022i-1A/firma_keys_db/issues"
+  },
+  "homepage": "https://github.com/unal-swarch-2022i-1A/firma_keys_db#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "express-validator": "^6.14.0",
+    "morgan": "^1.10.0",
+    "underscore": "^1.13.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  }
+}
