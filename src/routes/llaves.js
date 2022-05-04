@@ -6,7 +6,6 @@ const llaves = require('../ejemplo.json');
 
 const NodeRSA = require('node-rsa');
 
-
 function armar(datos){
 	var mat = datos[1];
 	for(var i = 2; i < datos.length && i != datos.length-1; i++){
@@ -20,16 +19,46 @@ router.get('/key', (req,res) => {
 	res.json(llaves);
 });
 
+router.get('/keypublic/:id', (req, res) => {
+	var { id } = req.params;
+
+	if (id && !isNaN(id)){
+		var ky = ""; 
+		_.each(llaves, (llave, i) => {
+			if (llave.id == parseInt(id)) {
+				ky = llave.public;
+			}
+		});
+		res.json({"public": ky});
+	}
+	else {
+		res.status(500).json({error: "there was an error"});
+	}
+});
+
+router.get('/keyprivate/:id', (req, res) => {
+	var { id } = req.params;
+
+	if (id && !isNaN(id)){
+		var ky = ""; 
+		_.each(llaves, (llave, i) => {
+			if (llave.id == parseInt(id)) {
+				ky = llave.private;
+			}
+		});
+		res.json({"private": ky});
+	}
+	else {
+		res.status(500).json({error: "there was an error"});
+	}
+});
+
 router.post('/newkey/:id', (req, res) => {
 	const key = new NodeRSA({b: 128});
 	var { id } = req.params;
 	var public = armar(key.exportKey('public').split('\n'));
 	var private = armar(key.exportKey('private').split('\n'));
-	
-	// var { id, public, private } = req.body;
-	// console.log(typeof(id), " | ", typeof(public), " | ", typeof(private));
-	// console.log(id, "\n", public, "\n", private);
-	
+
 	if (id && !isNaN(id)){
 		const newkey = {"id": parseInt(id), "public": public, "private": private};
 		// console.log(newkey);
