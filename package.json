@@ -21,6 +21,7 @@
     "express": "^4.18.1",
     "express-validator": "^6.14.0",
     "morgan": "^1.10.0",
+    "node-rsa": "^1.1.1",
     "underscore": "^1.13.3"
   },
   "devDependencies": {
