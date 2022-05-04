@@ -6,20 +6,14 @@ const llaves = require('../ejemplo.json');
 
 const NodeRSA = require('node-rsa');
 
-function armar(datos){
-	var mat = datos[1];
-	for(var i = 2; i < datos.length && i != datos.length-1; i++){
-		mat = mat + datos[i];
-	}
-	return mat
-}
+const valor = 2048;
 
 // routes - rutas
-router.get('/key', (req,res) => {
+router.get('/keys', (req,res) => {
 	res.json(llaves);
 });
 
-router.get('/keypublic/:id', (req, res) => {
+router.get('/keys/:id/public', (req, res) => {
 	var { id } = req.params;
 
 	if (id && !isNaN(id)){
@@ -36,7 +30,7 @@ router.get('/keypublic/:id', (req, res) => {
 	}
 });
 
-router.get('/keyprivate/:id', (req, res) => {
+router.get('/keys/:id/private', (req, res) => {
 	var { id } = req.params;
 
 	if (id && !isNaN(id)){
@@ -53,11 +47,11 @@ router.get('/keyprivate/:id', (req, res) => {
 	}
 });
 
-router.post('/newkey/:id', (req, res) => {
-	const key = new NodeRSA({b: 128});
+router.post('/keys/:id', (req, res) => {
+	const key = new NodeRSA({b: valor});
 	var { id } = req.params;
-	var public = armar(key.exportKey('public').split('\n'));
-	var private = armar(key.exportKey('private').split('\n'));
+	var public = key.exportKey('public');
+	var private = key.exportKey('private');
 
 	if (id && !isNaN(id)){
 		const newkey = {"id": parseInt(id), "public": public, "private": private};
@@ -69,12 +63,12 @@ router.post('/newkey/:id', (req, res) => {
 	}
 });
 
-router.put('/update/:id', (req, res) => {
+router.put('/keys/:id', (req, res) => {
 
-	const key = new NodeRSA({b: 128});
+	const key = new NodeRSA({b: valor});
 	var { id } = req.params;
-	var public = armar(key.exportKey('public').split('\n'));
-	var private = armar(key.exportKey('private').split('\n'));
+	var public = key.exportKey('public');
+	var private = key.exportKey('private');
 
 	if (id && !isNaN(id)){
 		_.each(llaves, (llave, i) => {
@@ -90,14 +84,14 @@ router.put('/update/:id', (req, res) => {
 	}
 });
 
-router.delete(`/delete/:id`, (req, res) => {
+router.delete(`/keys/:id`, (req, res) => {
 	const { id } = req.params;
 	_.each(llaves, (llave, i) => {
 		if(llave.id == parseInt(id)) {
 			llaves.splice(i,1);
 		}
 	});
-	res.send(llaves);
+	res.json(llaves);
 });
 
 module.exports = router;
