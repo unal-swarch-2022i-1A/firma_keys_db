@@ -9,7 +9,7 @@ const NodeRSA = require('node-rsa');
 const valor = 2048;
 
 // routes - rutas
-router.get('/keys', (req,res) => {
+router.get('/key', (req,res) => {
 	res.json(llaves);
 });
 
@@ -23,7 +23,8 @@ router.get('/keys/:id/public', (req, res) => {
 				ky = llave.public;
 			}
 		});
-		res.json({"public": ky});
+		res.send(ky);
+		// res.json(ky);
 	}
 	else {
 		res.status(500).json({error: "there was an error"});
@@ -40,7 +41,8 @@ router.get('/keys/:id/private', (req, res) => {
 				ky = llave.private;
 			}
 		});
-		res.json({"private": ky});
+		res.send(ky);
+		// res.json(ky);
 	}
 	else {
 		res.status(500).json({error: "there was an error"});
@@ -57,7 +59,8 @@ router.post('/keys/:id', (req, res) => {
 		const newkey = {"id": parseInt(id), "public": public, "private": private};
 		// console.log(newkey);
 		llaves.push(newkey);
-		res.json(newkey);
+		res.send();
+		// res.json(newkey);
 	} else {
 		res.status(500).json({error: "There was an error."});
 	}
