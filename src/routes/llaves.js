@@ -23,8 +23,8 @@ router.get('/keys/:id/public', (req, res) => {
 				ky = llave.public;
 			}
 		});
-		res.send(ky);
-		// res.json(ky);
+		//res.send(ky);
+		res.json(ky);
 	}
 	else {
 		res.status(500).json({error: "there was an error"});
@@ -41,8 +41,8 @@ router.get('/keys/:id/private', (req, res) => {
 				ky = llave.private;
 			}
 		});
-		res.send(ky);
-		// res.json(ky);
+		//res.send(ky);
+		res.json(ky);
 	}
 	else {
 		res.status(500).json({error: "there was an error"});
