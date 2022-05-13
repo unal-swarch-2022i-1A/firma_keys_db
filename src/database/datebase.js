@@ -1,11 +1,17 @@
-const mysql = require("mysql");
+const mysql = require("promise-mysql");
+const config = require("./../config")
 
-var connection = mysql.createConnection({
-	host: '127.0.0.1',
-	port: '8093',
-	user: 'root',
-	password: 'swarch-2022i',
-	database: 'fima_keys'
+var connection = mysql.createconnection({
+	host: config.host,
+	user: config.user,
+	password: config.password,
+	database: config.database
 });
 
-// connection.connect();
+const getConnection=() => {
+	return connection;
+};
+
+module.exports = {
+	getConnection
+};
