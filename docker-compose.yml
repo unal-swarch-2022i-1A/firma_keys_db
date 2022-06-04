@@ -3,7 +3,7 @@ services:
   keys_ms:
     container_name: firma_keys_ms    
     build: 
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       context: .
     volumes:
       - ./src:/usr/src/app/src
