@@ -5,7 +5,9 @@ Para correr con ` Dockerfile.dev`:
 ```bash
 docker rm -f node.dev
 docker build -t node.dev . -f Dockerfile.dev
-docker run -it -d --name node.dev -v $(pwd):/usr/src/app -p 8093:8093  node.dev
+docker run -it -d --name node.dev \
+    -v $(pwd)/src:/usr/src/app/src \
+    -p 8093:8093  node.dev
 docker exec -it node.dev /bin/bash
 npm run dev
 ```

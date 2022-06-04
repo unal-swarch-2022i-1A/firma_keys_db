@@ -9,8 +9,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-RUN yarn
-
 # Set the server port
 ENV PORT=8093
 EXPOSE 8093
