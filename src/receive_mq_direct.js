@@ -9,7 +9,7 @@ const controller = require('./controller');
 var args = process.argv.slice(2);
 
 // Validación de argumentos
-if (args.length == 0 || (!args.includes("public") && !args.includes("private"))) {
+if (args.length == 0 || (!args.includes("public") && !args.includes("private") )) {
     console.log("Usage: keys_ms.js [public] [private]");
     process.exit(1);
 }
@@ -24,12 +24,12 @@ amqp.connect(process.env.RABBITMQ_CONN, function (error0, connection) {
      * Resolves to an open Channel (The callback version returns the channel; but it is not usable before the 
      * callback has been invoked). May fail if there are no more channels available (i.e., if there are 
      * already channelMax channels open).
-     */    
+     */
     connection.createChannel(function (error1, channel) {
         if (error1) {
             throw error1;
-        }        
-        //#Region nuevo
+        }
+        
         /**
          * Assert an exchange into existence. As with queues, if the exchange exists already and has properties 
          * different to those supplied, the channel will ‘splode; fields in the arguments object may or may not 
@@ -38,10 +38,10 @@ amqp.connect(process.env.RABBITMQ_CONN, function (error0, connection) {
          * routed through the exchange.
          * https://amqp-node.github.io/amqplib/channel_api.html#channel_assertExchange
          */
-         var exchange = 'direct_logs';
-         channel.assertExchange(exchange, 'direct', {
+        var exchange = 'direct_logs';
+        channel.assertExchange(exchange, 'direct', {
             durable: false
-        });        
+        });
 
         /**
          * Assert a queue into existence. This operation is idempotent given identical arguments; however, it 
@@ -56,14 +56,12 @@ amqp.connect(process.env.RABBITMQ_CONN, function (error0, connection) {
          * 
          * https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue
          */
-         channel.assertQueue('', {
+        channel.assertQueue('', {
             exclusive: true
         }, function (error2, reply) {
             if (error2) {
                 throw error2;
             }
-            channel.prefetch(1);
-            
             console.log(' [*] Esperando mensajes para',args);
 
             args.forEach(function (severity) {
@@ -85,28 +83,22 @@ amqp.connect(process.env.RABBITMQ_CONN, function (error0, connection) {
              */
             channel.consume(reply.queue, function (msg) {
                 let n = parseInt(msg.content.toString());
-                var r;
                 switch (msg.fields.routingKey) {
                     case 'public':
-                        r = controller.getPublicKey(n);
-                        console.log(" [o] %s (%s): '%s'", msg.properties.replyTo, msg.fields.routingKey, msg.content.toString());                        
+                        var r = controller.getPublicKey(n);
+                        console.log(" [o] %s: '%s'", msg.fields.routingKey, msg.content.toString(),r);
+                        
                         break;
                     case 'private':
-                        r = controller.getPrivateKey(n);                    
-                        console.log(" [x] %s (%s): '%s'", msg.properties.replyTo, msg.fields.routingKey, msg.content.toString());                        
+                        var r = controller.getPrivateKey(n);                    
+                        console.log(" [x] %s: '%s'", msg.fields.routingKey, msg.content.toString(),r);                        
                         break;
                     default:
                         console.log(`Sorry, we are out of ${msg.fields.routingKey}.`);
-                }     
-
-                channel.sendToQueue(msg.properties.replyTo,
-                    Buffer.from(r.toString()), {
-                    correlationId: msg.properties.correlationId
-                });
-    
-                channel.ack(msg);
-
+                }            
+            }, {
+                noAck: true
             });
-        });        
+        });
     });
 });
