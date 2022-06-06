@@ -5,11 +5,7 @@ require('dotenv').config()
 var amqp = require('amqplib/callback_api');
 const controller = require('./controller');
 
-
-// URI del proceso RAbbitMQ
-const URI=`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@host.docker.internal`
-
-amqp.connect(URI, function(error0, connection) {
+amqp.connect(process.env.RABBITMQ_CONN, function(error0, connection) {
     if (error0) {
         throw error0;
     }
