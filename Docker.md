@@ -11,5 +11,6 @@ docker run -it -d \
     -v $(pwd)/tests:/usr/src/app/tests \
     --add-host=host.docker.internal:host-gateway \
     firma_keys_dev && \
+docker logs --tail 1000 -f firma_keys_dev  
 docker exec -it firma_keys_dev /bin/bash
 ```

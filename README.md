@@ -18,11 +18,11 @@ Publisher(RPC client) --> X
 ```
 
 ```bash
-nodejs ./src/rpc_server.js
+nodejs src/keys.server.js
 ```
 
 ```bash
-nodejs ./src/rpc_client.js 30
+nodejs src/keys.client.js
 ```
 
 ## Testing
