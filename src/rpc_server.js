@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 // Modulos NodeJS
-var amqp = require('amqplib/callback_api');
 require('dotenv').config()
+var amqp = require('amqplib/callback_api');
+const controller = require('./controller');
+
 
 // URI del proceso RAbbitMQ
 const URI=`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@host.docker.internal`
@@ -27,7 +29,7 @@ amqp.connect(URI, function(error0, connection) {
 
             console.log(" [.] fib(%d)", n);
 
-            var r = fibonacci(n);
+            var r = controller.fibonacci(n);
 
             channel.sendToQueue(msg.properties.replyTo,
                 Buffer.from(r.toString()), {
@@ -38,10 +40,3 @@ amqp.connect(URI, function(error0, connection) {
         });
     });
 });
-
-function fibonacci(n) {
-    if (n === 0 || n === 1)
-        return n;
-    else
-        return fibonacci(n - 1) + fibonacci(n - 2);
-}
