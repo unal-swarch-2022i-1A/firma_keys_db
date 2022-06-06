@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
+// Modulos NodeJS
 var amqp = require('amqplib/callback_api');
+require('dotenv').config()
+
+// URI del proceso RAbbitMQ
+const URI=`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@host.docker.internal`
 
 var args = process.argv.slice(2);
 
@@ -9,7 +14,7 @@ if (args.length === 0) {
     process.exit(1);
 }
 
-amqp.connect('amqp://localhost', function(error0, connection) {
+amqp.connect(URI, function(error0, connection) {
     if (error0) {
         throw error0;
     }
