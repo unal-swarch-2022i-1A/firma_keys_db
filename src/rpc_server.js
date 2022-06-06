@@ -27,9 +27,9 @@ amqp.connect(URI, function(error0, connection) {
         channel.consume(queue, function reply(msg) {
             var n = parseInt(msg.content.toString());
 
-            console.log(" [.] fib(%d)", n);
+            console.log(" [.] getPublicKey(%d)", n);
 
-            var r = controller.fibonacci(n);
+            var r = controller.getPublicKey(n);
 
             channel.sendToQueue(msg.properties.replyTo,
                 Buffer.from(r.toString()), {
