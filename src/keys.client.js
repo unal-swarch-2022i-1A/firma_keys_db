@@ -65,7 +65,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
        */
       var exchangeName = 'keys_ms_call_exchange';
       /**
-       * Se crear un `exchange`
+       * Se declara un `exchange`
        * 
        * @param {*} nombre
        * @param {*} tipo
@@ -83,7 +83,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
       });
 
       /**
-       * Creaamos un cola exlclusivamente para las respuestas del servidor a este cliente.
+       * Declaramos un cola exlclusivamente para las respuestas del servidor a este cliente.
        * **Importante:** Neceistamos crear primero la cola de respuesta antes de publicar el la solicitud, porque en la solicitud 
        * indicamos cual es la cola donde se colocará las respuesta. Por eso primero se crear la cola de respuesta
        * y ahí si se publica la solicitud
@@ -115,11 +115,27 @@ amqp.connect(ampqpOptions, function (error0, connection) {
 
           console.log(" [x] Llamando keys.%s con %s. exchange: %s", procedure, msg,exchangeName);
 
-          //peticion
-          channel.publish(exchangeName, procedure, Buffer.from(num.toString()), {
+          let options = {
             correlationId: correlationId,
             replyTo: assertedReplyQueue.queue
-          });          
+          }
+          let content = Buffer.from(num.toString())
+          /**
+           * Peticion
+           * Las opciones son:
+           * > * correlationId (string): usually used to match replies to requests, or similar
+           * > * replyTo (string): often used to name a queue to which the receiving application must send replies, 
+           * >   in an RPC scenario (many libraries assume this pattern)
+           * 
+           * @param exchange
+           * @param routingKey
+           * @param content
+           * @param options correlationId(string): usually used to match replies to requests, or similar , replyTo
+           * > Publish a single message to an exchange.
+           * 
+           * https://amqp-node.github.io/amqplib/channel_api.html#channel_publish
+           */
+          channel.publish(exchangeName, procedure, content, options);          
 
           console.log(' [*] Esperando respuesta...');
 

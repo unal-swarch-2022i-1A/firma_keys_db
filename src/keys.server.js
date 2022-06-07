@@ -14,6 +14,10 @@ if (args.length == 0 || (!args.includes("public") && !args.includes("private")))
     process.exit(1);
 }
 
+var queueName = args.join('_');
+
+console.log("Variable de entorno $RABBITMQ_HOST =",process.env.RABBITMQ_HOST);
+
 const ampqpOptions = {
     protocol: 'amqp',
     hostname: process.env.RABBITMQ_HOST,
@@ -81,12 +85,19 @@ amqp.connect(ampqpOptions, function (error0, connection) {
          * https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue
          */
         channel.assertQueue(
-            'keys_ms_request_queue',
+            `keys_ms_${queueName}_request_queue`,
             { exclusive: true },
             function (error2, assertedQueue) {
                 if (error2) {
                     throw error2;
                 }
+                /**
+                 * > Set the prefetch count for this channel. The count given is the maximum number of messages 
+                 * > sent over the channel that can be awaiting acknowledgement; once there are count messages 
+                 * > outstanding, the server will not send more messages on this channel until one or more have 
+                 * > been acknowledged. A falsey value for count indicates no such limit
+                 * https://amqp-node.github.io/amqplib/channel_api.html#channel_prefetch
+                 */
                 channel.prefetch(1);
 
                 console.log(' [*] Consumiento cola de peticiones `%s` asociadas a exchange `%s` con ruteo `%s`', assertedQueue.queue, exchangeName, args);
@@ -101,6 +112,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
                      * > The RabbitMQ tutorials give a good account of how routing works in AMQP.
                      * https://amqp-node.github.io/amqplib/channel_api.html#channel_bindQueue
                      */
+                    console.log(` [*] Enlazando la cola '${assertedQueue.queue}' con el exchange '${exchangeName}' con la llave '${procedure}'`)
                     channel.bindQueue(assertedQueue.queue, exchangeName, procedure);
                 });
 
