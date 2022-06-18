@@ -1,38 +1,41 @@
 # Base de datos de micro-servicio
 
-## Instalación MySQL
+## SQL query
+## Generación de llaves
+openssl genrsa [-out filename] [numbits]
+
+* **-out filename** Output the key to the specified file. If this argument is not specified then standard output is used.
+* **numbits** The size of the private key to generate in bits. This must be the last option specified. The default is 2048 and values less than 512 are not allowed.
+
 ```bash
-sudo apt install gnupg
-cd /tmp
-wget https://dev.mysql.com/get/mysql-apt-config_0.8.22-1_all.deb
-sudo dpkg -i mysql-apt-config*
-sudo apt update
-sudo apt install mysql-server
-sudo mysql_secure_installation
+openssl genrsa -out privatekey.pem 1024
+openssl rsa -noout -text -in privatekey.pem
+openssl rsa -in privatekey.pem -outform PEM -pubout -out publickey.pem
 ```
 
-## Creación de base de datos
-Nos conectamos con `sudo mysql -u root -p`
-```sql
-CREATE DATABASE firma_keys_db;
-SHOW databases;
-CREATE USER 'firma'@'localhost' IDENTIFIED BY 'firma';
-CREATE USER 'firma'@'%' IDENTIFIED BY 'firma';
-SELECT host, user, authentication_string FROM mysql.user;
-GRANT ALL PRIVILEGES ON firma_keys_db.* TO 'firma'@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-SHOW GRANTS FOR firma;
+## Archivos PEM
+PEM is just a standard; they contain text, and the format dictates that PEM files start with…
+```
+-----BEGIN <type>-----
+```
+…and end with:
+```
+-----END <type>-----
+```
+Everything in between is **base64 encoded** (uppercase and lowercase letters, digits, +, and /). This forms a block of data that can be used in other programs. A single PEM file can contain multiple blocks.
+
+## Longitud
+```bash
+openssl genrsa -out privatekey.pem 1024
+wc -c < privatekey.pem
+openssl rsa -in privatekey.pem -outform PEM -pubout -out publickey.pem
+wc -c < publickey.pem
+```
+salida
+```bash
+887
+272
 ```
 
+Leer https://security.stackexchange.com/questions/102508/why-is-openssl-key-length-different-from-specified-bytes
 
-
-## Permitir conexiones remotas
-Por defecto MySQL solo permite conexiones dentro del mismo host. Para permitir conexiones remotas necesitamos definir en `/etc/mysql/mysql.conf.d/mysqld.cnf` la propiedad `bind-addresss` en `0.0.0.0`. Luego se reinicia el servicio con `sudo systemctl restart mysql`
-
-## Exportar desde CLI
-```bash
-sudo mysqldump -u root -p firma_keys_db > firma_keys_db.sql
-```
-## Importar desde CLI
-```bash
-sudo mysql -u root -p < firma_keys_db.sql
