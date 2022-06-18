@@ -17,6 +17,14 @@
 
 
 USE firma_keys_db
+DROP USER IF EXISTS 'firma'@'localhost';
+DROP USER IF EXISTS 'firma'@'%';
+CREATE USER 'firma'@'localhost' IDENTIFIED BY 'firma';
+CREATE USER 'firma'@'%' IDENTIFIED BY 'firma';
+SELECT host, user, authentication_string FROM mysql.user;
+GRANT ALL PRIVILEGES ON firma_keys_db.* TO 'firma'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+SHOW GRANTS FOR firma;
 
 --
 -- Table structure for table `key`
@@ -51,3 +59,4 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2022-06-18 18:18:01
+
