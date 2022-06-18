@@ -9,8 +9,8 @@ docker run -it -d \
     -v $(pwd)/package.json:/usr/src/app/package.json \
     -v $(pwd)/src:/usr/src/app/src \
     -v $(pwd)/tests:/usr/src/app/tests \
-    -p 3000:3000 \
     --add-host=host.docker.internal:host-gateway \
     firma_keys_dev && \
+docker logs --tail 1000 -f firma_keys_dev  
 docker exec -it firma_keys_dev /bin/bash
 ```
