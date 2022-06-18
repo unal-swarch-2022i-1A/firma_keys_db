@@ -15,6 +15,8 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP DATABASE IF EXISTS firma_keys_db
+CREATE DATABASE firma_keys_db;
 
 USE firma_keys_db
 DROP USER IF EXISTS 'firma'@'localhost';
