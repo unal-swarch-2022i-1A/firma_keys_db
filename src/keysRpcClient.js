@@ -100,7 +100,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
        * https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue
        */
       channel.assertQueue(
-        'keys_ms_reṕly_queue',
+        'keys_ms_reṕly_queue.'+generateUuid(),
         { exclusive: true },
         /**
          * callback de assertQueue
