@@ -21,7 +21,7 @@ module.exports =  class KeysDao {
     constructor() {       
     }
 
-    async fetchData(userId, fields = ['*']) {  
+    async select(userId, fields = ['*']) {  
         this.connection = mysql.createConnection(CONNECTION_OPTIONS);               
         var fields_str = fields.join(",")
         var query_str = `SELECT ${fields_str} FROM \`key\` WHERE user_id = ${userId}`;
@@ -37,7 +37,7 @@ module.exports =  class KeysDao {
         return await promise;
     }
 
-    async insertData(userId,privateKey,publicKey) {  
+    async insert(userId,privateKey,publicKey) {  
         this.connection = mysql.createConnection(CONNECTION_OPTIONS);               
         var query_str = `INSERT INTO \`key\`(user_id,private, public)
         VALUES(
@@ -45,7 +45,7 @@ module.exports =  class KeysDao {
             '${privateKey}',
             '${publicKey}'
         )`;
-        console.log(`MySQL query: ${query_str}`);
+        //console.log(`MySQL query: ${query_str}`);
         let promise = await new Promise((resolve, reject) => {
             this.connection.connect();
             this.connection.query(query_str, function (error, results, fields) {
@@ -56,6 +56,36 @@ module.exports =  class KeysDao {
         })
         return await promise;
     }    
+
+    async update(userId,privateKey,publicKey) {  
+        this.connection = mysql.createConnection(CONNECTION_OPTIONS);               
+        var query_str = `UPDATE \`key\` SET private = '${privateKey}', public = '${publicKey}' WHERE user_id = ${userId}`;
+        //console.log(`MySQL query: ${query_str}`);
+        let promise = await new Promise((resolve, reject) => {
+            this.connection.connect();
+            this.connection.query(query_str, function (error, results, fields) {
+                if (error) reject(error);
+                resolve(results)
+            });
+            this.connection.end();
+        })
+        return await promise;
+    }        
+
+    async delete(userId) {  
+        this.connection = mysql.createConnection(CONNECTION_OPTIONS);               
+        var query_str = `DELETE FROM \`key\` WHERE user_id = ${userId}`;
+        //console.log(`MySQL query: ${query_str}`);
+        let promise = await new Promise((resolve, reject) => {
+            this.connection.connect();
+            this.connection.query(query_str, function (error, results, fields) {
+                if (error) reject(error);
+                resolve(results)
+            });
+            this.connection.end();
+        })
+        return await promise;
+    }          
 
 }
 

@@ -1,16 +1,21 @@
 #!/usr/bin/env node
 
+console.log('Launching RPC server');
+
 // Modulos NodeJS
 require('dotenv').config()
-var amqp = require('amqplib/callback_api');
+const amqp = require('amqplib/callback_api');
 const controller = require('./keysController');
 
 // Argumentos de llamada
 var args = process.argv.slice(2);
 
 // Validación de argumentos
-if (args.length == 0 || (!args.includes("public") && !args.includes("private"))) {
-    console.log("Usage: keys_ms.js [public] [private]");
+if (
+        args.length == 0 || 
+        (!args.includes("public") && !args.includes("private") && !args.includes("generate"))
+    ) {
+    console.log("Usage: keys_ms.js [generate] [public] [private]");
     process.exit(1);
 }
 
@@ -124,15 +129,18 @@ amqp.connect(ampqpOptions, function (error0, connection) {
                  * > Defaults to false (i.e., you will be expected to acknowledge messages).
                  * https://amqp-node.github.io/amqplib/channel_api.html#channel_consume
                  */
-                channel.consume(assertedQueue.queue, function (msg) {
+                channel.consume(assertedQueue.queue, async function (msg) {
                     let n = parseInt(msg.content.toString());
                     var _return;
                     switch (msg.fields.routingKey) {
+                        case 'generate':
+                            _return = await controller.generateKeys(n);           
+                            break;
                         case 'public':
-                            _return = controller.getPublicKey(n);
+                            _return = await controller.getPublicKey(n);                                
                             break;
                         case 'private':
-                            _return = controller.getPrivateKey(n);
+                            _return = await controller.getPrivateKey(n);                
                             break;
                         default:
                             console.log(`Sorry, we are out of ${msg.fields.routingKey}.`);

@@ -9,6 +9,13 @@ describe('Controller', () => {
         });
     });
 
+    it('generateKeys duplicated', () => {
+        return controller.generateKeys(userId).then(data => {
+            console.log(userId,data)
+            expect(data).not.toBeNull();
+        });
+    });
+
     it('getPublicKey', () => {
         return controller.getPublicKey(userId).then(data => {
             console.log(userId,data)
