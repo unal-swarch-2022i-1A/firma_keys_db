@@ -15,10 +15,10 @@ docker logs --tail 1000 -f firma_keys_dev
 docker exec -it firma_keys_dev /bin/bash
 ```
 ## Production
-Para correr con `Dockerfile.prod`:
+Para correr con `Dockerfile`:
 ```bash
 docker rm -f firma_keys_ms && \
-docker build -t firma_keys_ms:prod . -f Dockerfile.prod && \
+docker build -t firma_keys_ms:prod . -f Dockerfile && \
 docker run -it -d \
     --name firma_keys_ms \
     -v $(pwd)/package.json:/usr/src/app/package.json \
