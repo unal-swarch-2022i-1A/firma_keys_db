@@ -1,4 +1,4 @@
-const KeysDao = require('../src/KeysDao');
+const KeysDao = require('../src/keysDao');
 
 describe('KeysDao', () => {
 

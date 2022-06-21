@@ -3,7 +3,7 @@
 // Modulos NodeJS
 require('dotenv').config()
 var amqp = require('amqplib/callback_api');
-const controller = require('./controller');
+const controller = require('./keysController');
 
 // Argumentos de llamada
 var args = process.argv.slice(2);

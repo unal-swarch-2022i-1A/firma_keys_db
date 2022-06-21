@@ -1,4 +1,4 @@
-const KeysDao = require('./KeysDao.js');
+const KeysDao = require('./keysDao.js');
 const { generateKeyPairSync } = require('crypto');
 
 async function generateKeys(id) {
