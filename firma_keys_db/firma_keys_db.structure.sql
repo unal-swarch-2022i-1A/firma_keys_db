@@ -23,7 +23,7 @@ DROP USER IF EXISTS 'firma'@'localhost';
 DROP USER IF EXISTS 'firma'@'%';
 CREATE USER 'firma'@'localhost' IDENTIFIED BY 'firma';
 CREATE USER 'firma'@'%' IDENTIFIED BY 'firma';
-SELECT host, user, authentication_string FROM mysql.user;
+/* SELECT host, user, authentication_string FROM mysql.user; */
 GRANT ALL PRIVILEGES ON firma_keys_db.* TO 'firma'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 SHOW GRANTS FOR firma;
@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS `key`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `key` (
   `user_id` int NOT NULL,
-  `private` varchar(900) NOT NULL,
+  `private` varchar(1030) NOT NULL,
   `public` varchar(300) NOT NULL,
   UNIQUE KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
