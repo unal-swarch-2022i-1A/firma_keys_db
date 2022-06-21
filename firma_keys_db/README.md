@@ -1,6 +1,13 @@
 # Base de datos de micro-servicio
 
 ## SQL query
+```bash
+sudo mysql -u firma -p firma_keys_db
+```
+```sql
+SELECT * FROM `key`;
+```
+
 ## Generación de llaves
 openssl genrsa [-out filename] [numbits]
 

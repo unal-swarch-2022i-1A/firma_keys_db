@@ -35,3 +35,12 @@ Variables de entorno
 ```bash
 nodejs ./tests/testDotEnv.js
 ```
+
+### Jest
+```bash
+npx jest
+npx jest -i KeysDao.test.js -t insertData
+npx jest -i controller.test.js
+npx jest -i controller.test.js -t generateKeys
+npx jest -i controller.test.js -t getPrivateKey
+```
