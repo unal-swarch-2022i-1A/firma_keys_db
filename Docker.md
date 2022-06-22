@@ -25,7 +25,7 @@ docker run -it -d \
     -v $(pwd)/src:/usr/src/app/src \
     -v $(pwd)/tests:/usr/src/app/tests \
     --add-host=host.docker.internal:host-gateway \
-    firma_keys_ms:prod \
+    firma_keys_ms \
     generate public private && \
 docker logs --tail 1000 -f firma_keys_ms  
 docker exec -it firma_keys_ms /bin/bash
