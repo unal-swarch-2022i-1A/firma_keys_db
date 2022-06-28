@@ -69,7 +69,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
          */
         var exchangeName = 'keys_ms_call_exchange';
         channel.assertExchange(exchangeName, 'direct', {
-            durable: false
+            durable: true
         });
 
         /**
@@ -100,10 +100,10 @@ amqp.connect(ampqpOptions, function (error0, connection) {
                  * > Set the prefetch count for this channel. The count given is the maximum number of messages 
                  * > sent over the channel that can be awaiting acknowledgement; once there are count messages 
                  * > outstanding, the server will not send more messages on this channel until one or more have 
-                 * > been acknowledged. A falsey value for count indicates no such limit
+                 * > been acknowledged. A false value for count indicates no such limit
                  * https://amqp-node.github.io/amqplib/channel_api.html#channel_prefetch
                  */
-                channel.prefetch(1);
+                channel.prefetch(false);
 
                 console.log(' [*] Consumiento cola de peticiones `%s` asociadas a exchange `%s` con ruteo `%s`', assertedQueue.queue, exchangeName, args);
 
@@ -132,6 +132,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
                 channel.consume(assertedQueue.queue, async function (msg) {
                     let n = parseInt(msg.content.toString());
                     var _return;
+                    var _return_str;
                     switch (msg.fields.routingKey) {
                         case 'generate':
                             _return = await controller.generateKeys(n);           
@@ -146,14 +147,24 @@ amqp.connect(ampqpOptions, function (error0, connection) {
                             console.log(`Sorry, we are out of ${msg.fields.routingKey}.`);
                     }
 
-                    console.log(" [x] Procedimiento: %s, Parámetro: %s, Cola de respuesta: %s", msg.fields.routingKey, msg.content.toString(), msg.properties.replyTo);
+                    if(_return) {
+                      _return_str = _return.toString()
+                    }
+                    else {
+                      _return_str = "empty";
+                    }
 
+                    console.log("_return",_return)
+
+                    console.log(" [x] Procedimiento: %s, Parámetro: %s, Cola de respuesta: %s", msg.fields.routingKey, msg.content.toString(), msg.properties.replyTo);                    
                     channel.sendToQueue(msg.properties.replyTo,
-                        Buffer.from(_return.toString()), {
+                        Buffer.from(_return_str), {
                         correlationId: msg.properties.correlationId
                     });
 
                     channel.ack(msg);
+
+                    console.log(" [X] Fin RPC")
 
                 });
             });

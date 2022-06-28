@@ -52,7 +52,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
       var msg = args.slice(1).join(' ') || '1!';
       var num = parseInt(msg);
       var procedure = (args.length > 0) ? args[0] : 'private';
-      var correlationId = generateUuid();            
+      var correlationId = generateUuid();
 
       if (createChannelError) {
         throw createChannelError;
@@ -79,7 +79,7 @@ amqp.connect(ampqpOptions, function (error0, connection) {
        * > durable (boolean): if true, the exchange will survive broker restarts. Defaults to true.
        */
       channel.assertExchange(exchangeName, 'direct', {
-        durable: false
+        durable: true
       });
 
       /**
@@ -100,7 +100,8 @@ amqp.connect(ampqpOptions, function (error0, connection) {
        * https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue
        */
       channel.assertQueue(
-        'keys_ms_reply_queue',
+        //'',
+        'keys_ms_reply_queue.'+generateUuid(),
         { exclusive: false, durable: true },
         /**
          * callback de assertQueue
@@ -110,11 +111,42 @@ amqp.connect(ampqpOptions, function (error0, connection) {
         function (assertQueueError, assertedReplyQueue) {
           if (assertQueueError) {
             throw assertQueueError;
-          }
+          }          
 
 
-          console.log(" [x] Llamando keys.%s con %s. exchange: %s", procedure, msg,exchangeName);
+          console.log(" [x] Llamando keys.%s con %s. exchange: %s. Cola de respuesta: %s", procedure, msg, exchangeName, assertedReplyQueue.queue);
 
+          // Respuesta
+          /**
+           * Consume la cola de respuestas del servidor a este proceso cliente
+           * @param queue
+           * @param callback
+           * > Set up a consumer with a callback to be invoked with each message.
+           */
+           channel.consume(
+            assertedReplyQueue.queue,
+            /**
+             * callback de consume
+             * > The message callback supplied in the second argument will be invoked with message objects of this shape:
+             * > { content: Buffer, fields: Object, properties: Object }
+             * > The message content is a buffer containing the bytes published.
+             * @param {*} reply 
+             */
+            function (reply) {
+              console.log(' [.] Respuesta del servidor 1:\n', reply.content.toString());
+              if (reply.properties.correlationId === correlationId) {
+                console.log(' [.] Respuesta del servidor 2:\n', reply.content.toString());
+                setTimeout(function () {
+                  console.log(" [.] connection close 1")
+                  connection.close();
+                  process.exit(0);
+                }, 1000);
+              }
+            }, {
+            noAck: true
+          });          
+
+          // Peticion
           let options = {
             correlationId: correlationId,
             replyTo: assertedReplyQueue.queue
@@ -135,9 +167,9 @@ amqp.connect(ampqpOptions, function (error0, connection) {
            * 
            * https://amqp-node.github.io/amqplib/channel_api.html#channel_publish
            */
-          channel.publish(exchangeName, procedure, content, options);          
+          channel.publish(exchangeName, procedure, content, options);
 
-          console.log(' [*] Esperando respuesta...');
+          
 
           /**
            * Enlazar cola con un exchange, y asociar un clave de relación
@@ -151,43 +183,19 @@ amqp.connect(ampqpOptions, function (error0, connection) {
            */
           channel.bindQueue(assertedReplyQueue.queue, exchangeName, procedure);
 
-          /**
-           * Consume la cola de respuestas del servidor a este proceso cliente
-           * @param queue
-           * @param callback
-           * > Set up a consumer with a callback to be invoked with each message.
-           */
-          channel.consume(
-            assertedReplyQueue.queue,
-            /**
-             * callback de consume
-             * > The message callback supplied in the second argument will be invoked with message objects of this shape:
-             * > { content: Buffer, fields: Object, properties: Object }
-             * > The message content is a buffer containing the bytes published.
-             * @param {*} reply 
-             */
-            function (reply) {
-              //console.log(" [!] %s: '%s'", msg.fields, msg.content.toString());
-              if (reply.properties.correlationId === correlationId) {
-                console.log(' [.] Respuesta del servidor:\n',reply.content.toString());
-                setTimeout(function () {
-                  connection.close();
-                  process.exit(0);
-                }, 500);
-              }
-            }, {
-            noAck: true
-          });
+          console.log(' [*] Esperando respuesta...');
 
+          console.log(' [.] Fin!');
         });
 
-      
+
     });
 
   setTimeout(function () {
+    console.log(" [.] connection close 2")
     connection.close();
     process.exit(0)
-  }, 500);
+  }, 10000);
 });
 
 function generateUuid() {

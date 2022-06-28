@@ -27,11 +27,10 @@ async function generateKeys(id) {
         else {
             await keysDao.insert(id, privateKey, publicKey);     
             response = "Genrated";
-        }
-        
-                         
+        }                                 
     } catch (error) {
-        console.error("err",error)
+        console.error(`generateKeys(${id})`, error);
+        return null;
     }
     return response;  
 }
@@ -41,22 +40,26 @@ async function getPublicKey(id) {
     try {
         var keysDao = new KeysDao();
         let key = await keysDao.select(id, ["public"]);
-        return key.public;
         //console.log("id",id,"key",key);
+        if (key) return key.public;        
+        else return "";
     } catch (error) {
-        console.error('err', error);
-
+        console.error(`getPublicKey(${id})`, error);
+        return null;
     }
 }
 
 async function getPrivateKey(id) {
     try {
         var keysDao = new KeysDao();
+        //console.log("keysDao",keysDao);
         let key = await keysDao.select(id, ["private"]);
         //console.log("id",id,"key",key);
-        return key.private;
+        if (key) return key.private;        
+        else return "";        
     } catch (error) {
-        console.error('err', error);
+        console.error(`getPrivateKey(${id})`, error);
+        return null;
     }
 }
 

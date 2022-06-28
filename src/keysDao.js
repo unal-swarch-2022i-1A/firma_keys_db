@@ -13,8 +13,11 @@ const CONNECTION_OPTIONS = {
     host: MYSQL_HOST,
     user: MYSQL_USER,
     password: MYSQL_PASSWORD,
-    database: MYSQL_DATABASE
+    database: MYSQL_DATABASE,
+    connectTimeout: 30000
 };
+
+console.log("CONNECTION_OPTIONS",CONNECTION_OPTIONS);
 
 module.exports =  class KeysDao {
     connection;
@@ -29,8 +32,10 @@ module.exports =  class KeysDao {
         let promise = await new Promise((resolve, reject) => {
             this.connection.connect();
             this.connection.query(query_str, function (error, results, fields) {
+                //console.log("DAO:",results)
                 if (error) reject(error);
-                resolve(results[0])
+                if (!results) resolve("empty")
+                else resolve(results[0])
             });
             this.connection.end();
         })
