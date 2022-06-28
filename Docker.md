@@ -18,7 +18,7 @@ docker exec -it firma_keys_dev /bin/bash
 ## Production
 Para correr con `Dockerfile`:
 ```bash
-docker build -t firma_keys_ms . -f Dockerfile && \
+docker build -t firma_keys_ms . && \
 docker rm -f firma_keys_ms && \
 docker run -it -d \
     --name firma_keys_ms \

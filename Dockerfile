@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 # Archivo de variables de entorno
 COPY .env.production ./.env
 
+# Código fuente
+COPY ./src ./src
+
 # Install app dependencies
 COPY package*.json ./
 RUN npm install
